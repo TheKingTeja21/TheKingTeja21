@@ -24,7 +24,7 @@ const mypet= require("./routes/mypet");
 const broding=require("./routes/Broding")
 const Hospital = require("./routes/Hospital")
 dotenv.config();
-const serviceAccount = require("./firebaseKey.json");
+const serviceAccount = require("./firebaseKey2.json");
 const Broding = require("./controllers/Broding");
 
 admin.initializeApp({

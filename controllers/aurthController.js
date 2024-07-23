@@ -11,35 +11,47 @@ module.exports = {
     const user = req.body;
     try {
       await admin.auth().getUserByEmail(user.email);
-      res
-        .status(400)
-        .json({ message: "the gmail alerdy registration completed" });
+      res.status(400).json({ message: "The email is already registered" });
     } catch (error) {
       if (error.code === "auth/user-not-found") {
         try {
           const userResponse = await admin.auth().createUser({
             email: user.email,
             emailVerified: false,
-            fullName:user.fullName,
             password: user.password,
             disabled: false,
           });
+
           const newUser = new User({
             username: user.username,
             email: user.email,
-            password: Crtpto.AES.encrypt(
+            password: Crypto.AES.encrypt(
               user.password,
               process.env.SECRET_KEY
             ).toString(),
             uid: userResponse.uid,
             phone: user.phone,
             userType: user.userType,
+            aadhar_Number: user.aadhar_Number,
           });
+
           await newUser.save();
-          res.status(201).json({message:"Success"});
+          res.status(201).json({ message: "Success" });
         } catch (error) {
-          res.status(500).json(error);
+          if (error.code === 11000) { // Duplicate key error
+            if (error.keyValue.phone) {
+              res.status(400).json({ message: "Phone number is already registered" });
+            } else if (error.keyValue.aadhar_Number) {
+              res.status(400).json({ message: "Aadhar number is already registered" });
+            } else {
+              res.status(500).json({ message: "An error occurred", error: error.message });
+            }
+          } else {
+            res.status(500).json({ message: "An error occurred", error: error.message });
+          }
         }
+      } else {
+        res.status(500).json({ message: "An error occurred", error: error.message });
       }
     }
   },
