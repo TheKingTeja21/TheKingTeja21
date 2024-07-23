@@ -1,4 +1,4 @@
-const Crtpto = require("crypto-js");
+const Crypto = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const SECRET_KEY_jWT = "saihanumateja";
